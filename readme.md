@@ -13,7 +13,13 @@ and responds to AJAX requests from the client
 
 ## Requirements
 
-All of the project requirements are kept on this [public Trello Board](https://trello.com/b/EGiwONfD/g48-donut-dynasty-full-stack-project) which you can duplicate. To copy it, click the *Show Menu* button on the top right, then click *More*, and finally *Copy Board*.
+Project requirements are kept on this [public Trello Board](https://trello.com/b/EGiwONfD/g48-donut-dynasty-full-stack-project) which you can duplicate. To copy it, click the *Show Menu* button on the top right, then click *More*, and finally *Copy Board*.
+
+In addition, you should:
+
+1. Create an ERD with a tool like [draw.io](https://draw.io) and include the image in your final repository
+
+1. Deploy your site
 
 ## Mockups
 
