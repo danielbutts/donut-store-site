@@ -1,13 +1,11 @@
 
 exports.seed = function(knex, Promise) {
-  // Deletes ALL existing entries
-  return knex('table_name').del()
+  return knex('bases').del()
     .then(function () {
-      // Inserts seed entries
-      return knex('table_name').insert([
-        {id: 1, colName: 'rowValue1'},
-        {id: 2, colName: 'rowValue2'},
-        {id: 3, colName: 'rowValue3'}
+      return knex('bases').insert([
+        {name: 'Cake Base', price: 1.93},
+        {name: 'Yeast-Raised Base', price: 1.87},
+        {name: 'Gluten Free', price: 2.43},
       ]);
     });
 };
