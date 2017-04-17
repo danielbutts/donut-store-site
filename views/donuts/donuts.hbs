@@ -1,2 +1,11 @@
 <h1>Donut Dynasty</h1>
 <p>/donuts - list all donuts</p>
+
+<br>
+{{#each donuts}}
+  <h2>{{name}} - ${{price}}</h2>
+  <h3>{{base}}</h3>
+  {{#each toppings}}
+  <h3>{{name}} (${{price}})</h3>
+  {{/each}}
+{{/each}}
