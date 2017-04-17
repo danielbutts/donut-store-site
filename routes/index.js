@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.redirect('/donuts');
+  res.render('index', { title: 'Donut Dynasty - Home' });
 });
 
 module.exports = router;

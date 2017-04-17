@@ -19,7 +19,11 @@ In addition, you should:
 
 1. Create an ERD with a tool like [draw.io](https://draw.io) and include the image in your final repository
 
-1. Deploy your site
+**ERD**
+
+![](./mockups/donut\ erd.png)
+
+2. Deploy your site
 
 ## Mockups
 

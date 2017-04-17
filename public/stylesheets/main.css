@@ -6,3 +6,20 @@ body {
 a {
   color: #00B7FF;
 }
+
+img {
+  border-radius: 10px;
+  border: 1px solid darkgray;
+  margin: 0 auto;
+}
+
+img.donuts {
+  width: 200px;
+  height: 200px;
+}
+
+a.edit-cancel {
+  display: inline-block;
+  vertical-align: middle;
+  padding-top:50px;
+}
