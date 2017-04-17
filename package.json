@@ -1,0 +1,23 @@
+{
+  "name": "g48-donut-dynasty-project",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "express-session": "^1.15.2",
+    "hbs": "~4.0.1",
+    "knex": "^0.12.9",
+    "method-override": "^2.3.8",
+    "moment": "^2.18.1",
+    "morgan": "~1.8.1",
+    "nodemon": "^1.11.0",
+    "req-flash": "0.0.3",
+    "serve-favicon": "~2.4.2"
+  }
+}
