@@ -60,6 +60,7 @@ function objectifyDonuts(results) {
   });
   for (const d in donuts) {
     donuts[d].description = buildDescription(donuts[d]);
+    donuts[d].price = Math.round(donuts[d].price * 100, 0)/100;
   }
   return donuts;
 }
@@ -85,13 +86,23 @@ router.delete('/:id', function(req, res, next) {
   res.redirect('/donuts');
 });
 
-router.post('/', function(req, res, next) {
-  // create a new donut
-  res.redirect('/donuts');
-});
-
 router.get('/new', function(req, res, next) {
-  res.render('/donuts/new');
+  const id = req.params.id;
+  Promise.all([
+    getBases(),
+    getToppings(),
+  ])
+  .then((results) => {
+    const [bases, toppings] = results;
+    res.render(`donuts/new-donut`, {
+      title: 'Donut Dynasty - Customize',
+      bases,
+      toppings
+    });
+  })
+  .catch((err) => {
+    next(err);
+  })
 });
 
 router.get('/:id/edit', function(req, res, next) {
@@ -111,20 +122,23 @@ router.get('/:id/edit', function(req, res, next) {
         base.selected = true;
       }
     })
-    toppings.forEach((topping) => {
-      let matches = donut.toppings.filter((top) => {
-        return topping.id === top.id;
+    if (donut.toppings !== undefined) {
+      toppings.forEach((topping) => {
+        let matches = donut.toppings.filter((top) => {
+          return topping.id === top.id;
+        })
+        if (matches.length > 0) {
+          topping.checked = true;
+        }
       })
-      if (matches.length > 0) {
-        topping.checked = true;
-      }
-    })
+    }
     // console.log(toppings);
     res.render(`donuts/edit-donut`, {
       title: 'Donut Dynasty - Edit Donut',
       donut,
       bases,
-      toppings
+      toppings,
+      isEdit: true
     });
   })
   .catch((err) => {
@@ -132,8 +146,37 @@ router.get('/:id/edit', function(req, res, next) {
   })
 });
 
+router.post('/', function(req, res, next) {
+  const name = req.body.name;
+  const url = req.body.url;
+  const base = req.body.base;
+  const toppings = req.body.toppings;
+  const toppingPairs = [];
+
+  knex('donuts').insert({ name, image_url: url, base_id: base }).returning('*')
+  .then((result) => {
+    const donut = result[0];
+    console.log('donut', donut);
+    if (toppings !== undefined) {
+      if (Array.isArray(toppings)) {
+        toppings.forEach((topping) => {
+          toppingPairs.push({ donut_id: donut.id, topping_id: parseInt(topping) });
+        });
+      } else {
+        toppingPairs.push({ donut_id: donut.id, topping_id: parseInt(toppings) })
+      }
+      return knex('donut_topping').insert(toppingPairs);
+    }
+  })
+  .then(() => {
+    res.redirect('/donuts');
+  })
+  .catch((err) => {
+    next(err);
+  })
+});
+
 router.put('/', function(req, res, next) {
-  console.log(req.body);
   const id = parseInt(req.body.id);
   const name = req.body.name;
   const url = req.body.url;
@@ -144,9 +187,7 @@ router.put('/', function(req, res, next) {
 
   queries.push(knex('donuts').update({ name, image_url: url, base_id: base, updated_at: moment() }).where({ id }));
   queries.push(knex('donut_topping').delete().where({ donut_id: id}));
-  console.log('toppings', toppings, req.body.toppings);
   if (toppings !== undefined) {
-    console.log('here');
     if (Array.isArray(toppings)) {
       toppings.forEach((topping) => {
         toppingPairs.push({ donut_id: id, topping_id: parseInt(topping) });
@@ -154,7 +195,6 @@ router.put('/', function(req, res, next) {
     } else {
       toppingPairs.push({ donut_id: id, topping_id: parseInt(toppings) })
     }
-    console.log('toppingPairs', toppingPairs);
     queries.push(knex('donut_topping').insert(toppingPairs));
   }
 
