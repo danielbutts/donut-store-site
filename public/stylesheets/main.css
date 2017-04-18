@@ -18,6 +18,11 @@ img.donuts {
   height: 200px;
 }
 
+img.donuts-small {
+  width: 100px;
+  height: 100px;
+}
+
 a.edit-cancel {
   display: inline-block;
   vertical-align: middle;

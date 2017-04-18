@@ -1,10 +1,15 @@
 var express = require('express');
+const knex = require('../db/connection');
+const utils = require('../utils/utils.js');
+
 var router = express.Router();
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
-  const orders = {};
-  res.render('orders', orders);
+  knex('orders').select('*')
+  .then((orders) => {
+    res.render('orders/orders', orders);
+  })
+
 });
 
 router.delete('/:id', function(req, res, next) {
@@ -18,7 +23,16 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/new', function(req, res, next) {
-  res.render('/orders/new');
+  utils.getDonutOrDonuts().then((results) => {
+    const donuts = utils.objectifyDonuts(results);
+    const donutsArray = [];
+    for (const d in donuts) {
+      donutsArray.push(donuts[d]);
+    }
+    donutsArray.sort(utils.compareCreatedAtDesc);
+    console.log(donutsArray);
+    res.render('orders/new-order', { title: 'Donut Dynasty - New Order', donutsArray });
+  })
 });
 
 router.get('/edit/:id', function(req, res, next) {

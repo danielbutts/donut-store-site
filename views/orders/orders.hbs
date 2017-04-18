@@ -1,2 +1,21 @@
-<h1>Donut Dynasty</h1>
-<p>/orders - list all orders</p>
+{{message}}
+{{success}}
+
+<br>
+{{#each orders}}
+<br>
+<div class="row">
+  <div class="col-xs-4 text-left">
+    <div>
+      <h3>{{name}}</h3><br>
+      <h3>{{email}}</h3><br>
+      {{#each donuts}}
+        <h3>{{name}}</h3><br>
+        <h3>{{quantity}}</h3><br>
+        <h3>{{price}}</h3><br>
+      {{/each}}
+      <h3>{{total}}</h3><br>
+    </div>
+  </div>
+</div>
+{{/each}}

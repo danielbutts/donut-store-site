@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const index = require('./routes/index');
 const donuts = require('./routes/donuts');
+const orders = require('./routes/orders');
 const hbs = require('hbs');
 const flash = require('req-flash');
 const session = require('express-session');
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/donuts', donuts);
+app.use('/orders', orders);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
