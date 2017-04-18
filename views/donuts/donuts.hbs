@@ -1,17 +1,14 @@
 <br>
 {{#each donuts}}
-<br><hr>
+<br>
 <div class="row">
   <div class="col-xs-offset-2 col-xs-2 text-center">
     <img class="img-responsive donuts" src="{{url}}">
   </div>
   <div class="col-xs-4 text-left">
     <div>
-      <h3>{{name}} (${{price}})</h3>
-      <h4>Toppings:</h4>
-      {{#each toppings}}
-        <h5>{{name}}</h5>
-      {{/each}}
+      <h3>{{name}} (${{price}})</h3><br>
+      <h4>{{description}}</h4>
     </div>
   </div>
   <div class="col-xs-1 text-left list"><a href="/donuts/{{id}}/edit" class="h4 edit-cancel">Edit</a></div>
