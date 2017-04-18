@@ -1,5 +1,8 @@
+{{message}}
+{{success}}
+
 <br>
-{{#each donuts}}
+{{#each donutsArray}}
 <br>
 <div class="row">
   <div class="col-xs-offset-2 col-xs-2 text-center">
@@ -12,6 +15,29 @@
     </div>
   </div>
   <div class="col-xs-1 text-left list"><a href="/donuts/{{id}}/edit" class="h4 edit-cancel">Edit</a></div>
-  <div class="col-xs-1 text-left list"><a href="/donuts/{{id}}?_method=DELETE" class="edit-cancel h4">Delete</a></div>
+  <div class="col-xs-1 text-left list"><a href="" id="delete_{{id}}" class="edit-cancel h4 delete">Delete</a></div>
 </div>
 {{/each}}
+
+<script type="text/javascript">
+$(".delete").on("click",function(e) {
+  e.preventDefault();
+  let target = e.target.closest( "a" );
+  let id = $(target).attr("id").split('_')[1];
+
+  var opts = {
+    method: 'post',
+    url: `/donuts/${id}?_method=DELETE`
+  };
+
+  var $xhr = $.ajax(opts);
+
+  $xhr.done(function(result) {
+    console.log(result);
+    window.location = `/donuts?message=${result.message}`;
+  });
+  $xhr.fail(function(err) {
+    console.error(err);
+  });
+});
+</script>

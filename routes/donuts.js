@@ -5,21 +5,21 @@ const moment = require('moment');
 var router = express.Router();
 
 function getDonutOrDonuts(id) {
-  let query = knex.select('donuts.name as donut_name', 'donuts.id as donut_id', 'donuts.image_url', 'bases.name as base_name', 'bases.price as base_price', 'bases.id as base_id', 'toppings.name as topping_name', 'toppings.price as topping_price', 'toppings.id as topping_id')
+  let query = knex.select('donuts.name as donut_name', 'donuts.id as donut_id', 'donuts.image_url', 'donuts.created_at', 'bases.name as base_name', 'bases.price as base_price', 'bases.id as base_id', 'toppings.name as topping_name', 'toppings.price as topping_price', 'toppings.id as topping_id')
   .from('donuts')
   .innerJoin('bases','donuts.base_id','bases.id')
   .leftOuterJoin('donut_topping','donut_topping.donut_id','donuts.id')
-  .leftOuterJoin('toppings', 'donut_topping.topping_id', 'toppings.id');
+  .leftOuterJoin('toppings', 'donut_topping.topping_id', 'toppings.id')
   if (id !== undefined) {
-    query = query.where({ 'donuts.id': id });
+    query = query.where({ 'donuts.id': id, 'is_active': true });
+  } else {
+    query = query.where({ 'is_active': true });
   }
-  // console.log(query.toSQL());
   return query;
 }
 
 function buildDescription(donut) {
   description = `${donut.base.name} donut`;
-  console.log(donut.toppings);
   if (donut.toppings !== undefined && donut.toppings.length > 0) {
     description += ' topped with ';
     donut.toppings.forEach((topping, i) => {
@@ -73,17 +73,42 @@ function getToppings() {
   return knex('toppings').select('*');
 }
 
+function compareCreatedAtDesc(a, b) {
+  if (a.created_at < b.created_at) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
 router.get('/', function(req, res, next) {
+  const success = req.flash().success;
+  const message = req.query.message;
   getDonutOrDonuts()
   .then((results) => {
     const donuts = objectifyDonuts(results);
-    res.render('donuts/donuts', { title: 'Donut Dynasty - All Donuts', donuts });
+    const donutsArray = [];
+    for (const d in donuts) {
+      donutsArray.push(donuts[d]);
+    }
+    donutsArray.sort(compareCreatedAtDesc);
+    res.render('donuts/donuts', { title: 'Donut Dynasty - All Donuts', donutsArray, message, success });
+  })
+  .catch((err) => {
+    next(err);
   })
 });
 
 router.delete('/:id', function(req, res, next) {
-  // de-activate donut
-  res.redirect('/donuts');
+  const id = req.params.id;
+  knex('donuts').update({ is_active: false, updated_at: moment() }).where({ id }).returning('*')
+  .then((result) => {
+    const donut = result[0];
+    res.json({ donut, message: `${donut.name} successfully deleted.` });
+  })
+  .catch((err) => {
+    next(err);
+  })
 });
 
 router.get('/new', function(req, res, next) {
@@ -156,7 +181,6 @@ router.post('/', function(req, res, next) {
   knex('donuts').insert({ name, image_url: url, base_id: base }).returning('*')
   .then((result) => {
     const donut = result[0];
-    console.log('donut', donut);
     if (toppings !== undefined) {
       if (Array.isArray(toppings)) {
         toppings.forEach((topping) => {
@@ -169,6 +193,7 @@ router.post('/', function(req, res, next) {
     }
   })
   .then(() => {
+    req.flash('success', `${name} successfully created.`);
     res.redirect('/donuts');
   })
   .catch((err) => {
