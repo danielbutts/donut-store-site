@@ -2,20 +2,27 @@
 {{success}}
 
 <br>
+<div class="row">
+  <div class="col-xs-offset-1 col-xs-8 text-left">
+    <h2>Past Orders:</h2>
+    <br>
+  </div>
+</div>
+
 {{#each orders}}
 <br>
 <div class="row">
-  <div class="col-xs-4 text-left">
-    <div>
-      <h3>{{name}}</h3><br>
-      <h3>{{email}}</h3><br>
-      {{#each donuts}}
-        <h3>{{name}}</h3><br>
-        <h3>{{quantity}}</h3><br>
-        <h3>{{price}}</h3><br>
-      {{/each}}
-      <h3>{{total}}</h3><br>
-    </div>
+  <div class="col-xs-offset-1 col-xs-2 text-left">
+    <h4>{{name}}</h4>
+  </div>
+  <div class="col-xs-3 text-left">
+    <h4>{{email}}</h4>
+  </div>
+  <div class="col-xs-3 text-left">
+    <h4>{{created_at}}</h4>
+  </div>
+  <div class="col-xs-2 text-left">
+    <h4><a href="/orders/{{id}}">View Detail</a></h4>
   </div>
 </div>
 {{/each}}

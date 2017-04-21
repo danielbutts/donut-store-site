@@ -1,6 +1,7 @@
 const express = require('express');
 const knex = require('../db/connection');
 const utils = require('../utils/utils.js');
+const moment = require('moment');
 
 const router = express.Router();
 
@@ -8,7 +9,11 @@ router.get('/', (req, res, next) => {
   knex('orders').select('*')
   .then((orders) => {
     if (orders.length > 0) {
-      res.render('orders/orders', orders);
+      orders.forEach((o) => {
+        const order = o;
+        order.created_at = moment(order.created_at).format('MMMM Do YYYY @ h:mm:ss a');
+      });
+      res.render('orders/orders', { orders });
     } else {
       res.render('orders/orders', { message: 'No orders found.' });
     }
