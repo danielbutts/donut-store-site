@@ -3,27 +3,27 @@ const knex = require('../db/connection');
 const moment = require('moment');
 const utils = require('../utils/utils.js');
 
-var router = express.Router();
+const router = express.Router();
 
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
   const success = req.flash().success;
   const message = req.query.message;
   utils.getDonutOrDonuts()
   .then((results) => {
     const donuts = utils.objectifyDonuts(results);
     const donutsArray = [];
-    for (const d in donuts) {
+    Object.keys(donuts).forEach((d) => {
       donutsArray.push(donuts[d]);
-    }
+    });
     donutsArray.sort(utils.compareCreatedAtDesc);
     res.render('donuts/donuts', { title: 'Donut Dynasty - All Donuts', donutsArray, message, success });
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
   knex('donuts').update({ is_active: false, updated_at: moment() }).where({ id }).returning('*')
   .then((result) => {
@@ -32,34 +32,33 @@ router.delete('/:id', function(req, res, next) {
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
-router.get('/new', function(req, res, next) {
-  const id = req.params.id;
+router.get('/new', (req, res, next) => {
   Promise.all([
     utils.getBases(),
     utils.getToppings(),
   ])
   .then((results) => {
     const [bases, toppings] = results;
-    res.render(`donuts/new-donut`, {
+    res.render('donuts/new-donut', {
       title: 'Donut Dynasty - Customize',
       bases,
-      toppings
+      toppings,
     });
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
-router.get('/:id/edit', function(req, res, next) {
+router.get('/:id/edit', (req, res, next) => {
   const id = req.params.id;
   Promise.all([
     utils.getBases(),
     utils.getToppings(),
-    utils.getDonutOrDonuts(id)
+    utils.getDonutOrDonuts(id),
   ])
   .then((results) => {
     const [bases, toppings] = results;
@@ -67,35 +66,35 @@ router.get('/:id/edit', function(req, res, next) {
     const donut = donuts[id];
     // console.log(results);
     bases.forEach((base) => {
-      if (base.id === donut.base.id) {
-        base.selected = true;
+      const donutBase = base;
+      if (donutBase.id === donut.base.id) {
+        donutBase.selected = true;
       }
-    })
+    });
     if (donut.toppings !== undefined) {
       toppings.forEach((topping) => {
-        let matches = donut.toppings.filter((top) => {
-          return topping.id === top.id;
-        })
+        const donutTopping = topping;
+        const matches = donut.toppings.filter(top => donutTopping.id === top.id);
         if (matches.length > 0) {
-          topping.checked = true;
+          donutTopping.checked = true;
         }
-      })
+      });
     }
     // console.log(toppings);
-    res.render(`donuts/edit-donut`, {
+    res.render('donuts/edit-donut', {
       title: 'Donut Dynasty - Edit Donut',
       donut,
       bases,
       toppings,
-      isEdit: true
+      isEdit: true,
     });
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
-router.post('/', function(req, res, next) {
+router.post('/', (req, res, next) => {
   const name = req.body.name;
   const url = req.body.url;
   const base = req.body.base;
@@ -108,13 +107,14 @@ router.post('/', function(req, res, next) {
     if (toppings !== undefined) {
       if (Array.isArray(toppings)) {
         toppings.forEach((topping) => {
-          toppingPairs.push({ donut_id: donut.id, topping_id: parseInt(topping) });
+          toppingPairs.push({ donut_id: donut.id, topping_id: parseInt(topping, 10) });
         });
       } else {
-        toppingPairs.push({ donut_id: donut.id, topping_id: parseInt(toppings) })
+        toppingPairs.push({ donut_id: donut.id, topping_id: parseInt(toppings, 10) });
       }
       return knex('donut_topping').insert(toppingPairs);
     }
+    return null;
   })
   .then(() => {
     req.flash('success', `${name} successfully created.`);
@@ -122,11 +122,11 @@ router.post('/', function(req, res, next) {
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
-router.put('/', function(req, res, next) {
-  const id = parseInt(req.body.id);
+router.put('/', (req, res, next) => {
+  const id = parseInt(req.body.id, 10);
   const name = req.body.name;
   const url = req.body.url;
   const base = req.body.base;
@@ -135,14 +135,14 @@ router.put('/', function(req, res, next) {
   const queries = [];
 
   queries.push(knex('donuts').update({ name, image_url: url, base_id: base, updated_at: moment() }).where({ id }));
-  queries.push(knex('donut_topping').delete().where({ donut_id: id}));
+  queries.push(knex('donut_topping').delete().where({ donut_id: id }));
   if (toppings !== undefined) {
     if (Array.isArray(toppings)) {
       toppings.forEach((topping) => {
-        toppingPairs.push({ donut_id: id, topping_id: parseInt(topping) });
+        toppingPairs.push({ donut_id: id, topping_id: parseInt(topping, 10) });
       });
     } else {
-      toppingPairs.push({ donut_id: id, topping_id: parseInt(toppings) })
+      toppingPairs.push({ donut_id: id, topping_id: parseInt(toppings, 10) });
     }
     queries.push(knex('donut_topping').insert(toppingPairs));
   }
@@ -153,7 +153,7 @@ router.put('/', function(req, res, next) {
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
 module.exports = router;

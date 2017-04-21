@@ -1,2 +1,30 @@
-<h1>Donut Dynasty</h1>
-<p>/orders/:id - view details of an existing order</p>
+<div class="row">
+  <div class="col-xs-offset-4 col-xs-4 text-center">
+    <h1>{{customer.name}}, thank you for your order!</h1>
+    <br>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-offset-2 col-xs-8 text-left">
+    <h2>Order Detail:</p>
+
+    {{#each donuts}}
+    <div class="row">
+      <div class="col-xs-5 text-left">
+        <h3>{{name}} (${{price}})</h3>
+      </div>
+      <div class="col-xs-3 text-left">
+        <h3>x {{quantity}}</h3>
+      </div>
+      <div class="col-xs-3 text-left">
+        <h3>${{subtotal}}</h3>
+      </div>
+    </div>
+    {{/each}}
+    <div class="row">
+      <br>
+      <div class="col-xs-12 text-left">Total: ${{total}}</div>
+    </div>
+  </div>
+</div>
